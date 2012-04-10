@@ -400,8 +400,6 @@ feature {NONE} -- Implementation
 	setup_dialog
 			-- May be redefined to setup the dialog and its
 			-- children.
-		local
-			button_imp: detachable EV_BUTTON_IMP
 		do
 			check other_imp /= Void end
 				-- Copy the attributes from the window to the dialog
@@ -421,7 +419,7 @@ feature {NONE} -- Implementation
 			check
 					-- Parent_window should not be void due to the precondition
 					-- of `make_with_dialog_window_and_parent'.
-				parent_window /= Void
+				parent_window_attached: parent_window /= Void
 			end
 			if apply_center_dialog then
 				center_dialog
@@ -436,10 +434,8 @@ feature {NONE} -- Implementation
 				l_default_push_button.is_sensitive and then
 				attached default_push_button as l_interface_default_push_button
 			then
-				button_imp ?= l_interface_default_push_button.implementation
-				check button_imp /= Void end
 				set_default_push_button (l_interface_default_push_button)
-				button_imp.set_focus
+				l_interface_default_push_button.set_focus
 			end
 
 				-- Destroy the Dialog-window implementation
@@ -452,15 +448,16 @@ feature {NONE} -- Implementation
 	move_children
 			-- Move the children to the dialog or the window, depending
 			-- on which is currently selected in `wel_item'.
-		local
-			loc_item_imp: detachable EV_WIDGET_IMP
 		do
 			--| FIXME handle EV_SPLIT_AREA_IMP and EV_TABLE_IMP
-			check other_imp /= Void end
-			loc_item_imp ?= other_imp.item_imp
-			if loc_item_imp /= Void then
+			if
+				other_imp /= Void and then
+				attached {EV_WIDGET_IMP} other_imp.item_imp as loc_item_imp
+			then
 				loc_item_imp.set_top_level_window_imp (Current)
 				loc_item_imp.wel_set_parent (Current)
+			else
+				check other_imp_is_widget_imp: False end
 			end
 		end
 
@@ -658,14 +655,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 			-- Interface for `Current'.
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

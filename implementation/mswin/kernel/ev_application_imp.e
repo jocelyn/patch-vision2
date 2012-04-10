@@ -251,7 +251,6 @@ feature {EV_WIDGET_IMP} -- Implementation
 	windows_internal (a_include_hidden: BOOLEAN): LINEAR [EV_WINDOW]
 			-- Implementation for `windows', use `a_include_hidden' to include hidden Windows in result.
 		local
-			ev_win: detachable EV_WINDOW_IMP
 			res: ARRAYED_LIST [EV_WINDOW]
 		do
 			create res.make (Application_windows_id.count)
@@ -262,8 +261,7 @@ feature {EV_WIDGET_IMP} -- Implementation
 				Application_windows_id.after
 			loop
 				if is_window (Application_windows_id.item) then
-					ev_win ?= window_of_item (Application_windows_id.item)
-					if ev_win /= Void then
+					if attached {EV_WINDOW_IMP} window_of_item (Application_windows_id.item) as ev_win then
 						if (not a_include_hidden) implies ev_win.is_displayed then
 								-- If not including hidden then we only want displayed windows.
 							res.extend (ev_win.attached_interface)
@@ -735,14 +733,14 @@ invariant
 	process_handle_valid: not is_destroyed implies process_handle /= default_pointer
 
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EV_APPLICATION_IMP
